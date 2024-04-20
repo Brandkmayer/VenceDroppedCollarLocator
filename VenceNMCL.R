@@ -99,7 +99,7 @@ rm(NMC_listed,NMC_uncleaned)
 
 # Step 2: writes a shapefile of the clustered gps center point
 # May need to  adjust epsg
-NoMovementCenter <- MC_Cleaned[NMC_Cleaned$ErrorGPS1 >=26 |NMC_Cleaned$ErrorGPS2 >=26,] %>% group_by(collar)%>% summarise(longitude=mean(longitude), latitude=mean(latitude))
+NoMovementCenter <- NMC_Cleaned[NMC_Cleaned$ErrorGPS1 >=26 |NMC_Cleaned$ErrorGPS2 >=26,] %>% group_by(collar)%>% summarise(longitude=mean(longitude), latitude=mean(latitude))
 st_write(st_as_sf(NoMovementCenter, coords = c("longitude", "latitude"), crs = 4326),paste0(getwd(),"/Product/MissingNMCollars","_",lubridate::date(min(NoMovement$date)),"_",lubridate::date(max(NoMovement$date)),".shp"))
 st_write(st_as_sf(NoMovementCenter, coords = c("longitude", "latitude"), crs = 4326),paste0(getwd(),"/Product/MissingNMCollars","_",lubridate::date(min(NoMovement$date)),"_",lubridate::date(max(NoMovement$date)),".kml"),driver = "KML")
 
