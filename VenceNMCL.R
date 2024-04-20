@@ -72,6 +72,7 @@ NMC_Cleaned <-NMC_uncleaned %>%
          ErrorGPS2 = slide2_dbl(.x = longitude,.y = latitude, ~count_return(.x,.y,34),.before = 25))
 rm(NMC_listed,NMC_uncleaned)
 
+ ## GPS count visualizations
 # for (i in unique(NMC_uncleanedErrored$collar)) {
 # temp <- ggplot2::ggplot(data=NMC_uncleanedErrored[NMC_uncleanedErrored$collar == i,], ggplot2::aes(x=date, y=ErrorGPS1, color = )) +
 #     ggplot2::geom_line()+
@@ -83,9 +84,6 @@ rm(NMC_listed,NMC_uncleaned)
 #   ggplot2::ggtitle(paste(i," 2"))
 #   print(temp);print(temp2)
 # }
-
-# Step 2: writes a shapefile of the clustered gps center point
-NoMovement <- NMC_Cleaned[NMC_Cleaned$ErrorGPS1 >=26 |NMC_Cleaned$ErrorGPS2 >=26,]
 
 ## Visual observation of center in relation to all points  
 # for (i in 1:length(unique(NoMovement$collar))) {
@@ -99,8 +97,9 @@ NoMovement <- NMC_Cleaned[NMC_Cleaned$ErrorGPS1 >=26 |NMC_Cleaned$ErrorGPS2 >=26
 #   print(m)
 # }
 
+# Step 2: writes a shapefile of the clustered gps center point
 # May need to  adjust epsg
-NoMovementCenter <- NoMovement %>% group_by(collar)%>% summarise(longitude=mean(longitude), latitude=mean(latitude))
+NoMovementCenter <- MC_Cleaned[NMC_Cleaned$ErrorGPS1 >=26 |NMC_Cleaned$ErrorGPS2 >=26,] %>% group_by(collar)%>% summarise(longitude=mean(longitude), latitude=mean(latitude))
 st_write(st_as_sf(NoMovementCenter, coords = c("longitude", "latitude"), crs = 4326),paste0(getwd(),"/Product/MissingNMCollars","_",lubridate::date(min(NoMovement$date)),"_",lubridate::date(max(NoMovement$date)),".shp"))
 st_write(st_as_sf(NoMovementCenter, coords = c("longitude", "latitude"), crs = 4326),paste0(getwd(),"/Product/MissingNMCollars","_",lubridate::date(min(NoMovement$date)),"_",lubridate::date(max(NoMovement$date)),".kml"),driver = "KML")
 
